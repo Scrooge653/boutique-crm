@@ -1,11 +1,19 @@
-# Atelier — Boutique e-commerce et CRM (maquette)
+# Atelier — boutique et CRM
 
-Site de démonstration responsive en français, livré dans un fichier HTML autonome : vitrine, collections (vêtements, chaussures, sacs à dos, sacoches, sandales), fiches produits de présentation, panier de démonstration et tableau de bord de gestion avec exemples de commandes, clients et stocks.
+Socle full-stack : boutique HTML existante, API Node/Express, base SQLite locale, comptes clients, sessions sécurisées par cookie HttpOnly, commandes transactionnelles avec décrémentation du stock, endpoints d'administration.
 
-## Utilisation
+## Prérequis
+Node.js 20 ou plus. Installer avec `npm install`, copier `.env.example` vers `.env`, puis remplacer `JWT_SECRET` par une valeur aléatoire forte (`openssl rand -hex 32`). Lancer `npm run dev` puis ouvrir `http://localhost:3000`.
 
-Ouvrir `index.html` dans un navigateur. Cliquer sur **Espace gestion** pour voir le tableau de bord, puis sur **Voir la boutique** pour revenir à la vitrine.
+La base SQLite est créée automatiquement dans `data/atelier.sqlite`. Pour installer les dépendances natives SQLite, une toolchain de compilation peut être nécessaire selon le système.
 
-## Important — avant de vendre réellement
+## API disponible
+- `GET /api/products`, `/api/categories`
+- `POST /api/auth/register` (`name,email,password`), `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/me`
+- `GET /api/orders`, `POST /api/orders` (client connecté; lignes `{productId,quantity}`)
+- Admin : `GET /api/admin/summary`, `GET /api/admin/customers`, `POST /api/admin/products`, `PATCH /api/admin/orders/:id`
 
-Cette livraison est un **prototype visuel**, pas encore un système de vente en production. Le panier et les boutons client/admin sont des démonstrations ; les données du tableau de bord sont fictives. Il ne faut pas y saisir ou y traiter de vraies données clients ou paiements. Une mise en production demande notamment : backend/API, base de données, authentification et rôles sécurisés, paiement (p. ex. Stripe), gestion persistante du stock et des commandes, notifications, politique de confidentialité/CGV et configuration d’hébergement. Les images sont chargées depuis Unsplash.
+## Mise en production — indispensable
+Ce dépôt fournit les fondations backend, pas une boutique prête à traiter des paiements en argent réel. Le checkout réserve/décrémente les quantités mais ne débite aucune carte. Ajouter un prestataire (Stripe/équivalent) et valider les paiements par webhook avant d'expédier. Configurer HTTPS, secrets hors dépôt, sauvegardes et restauration, limitation de débit, politique de confidentialité/RGPD et tests. Le rôle admin ne peut pas être attribué par l'inscription publique; créer le premier administrateur de façon contrôlée directement en base après inscription, par exemple `UPDATE users SET role='admin' WHERE email='adresse-verifiee@example.com';`. Ne jamais exposer le fichier SQLite publiquement.
+
+Les commandes, clients, produits et ventes fictifs de la maquette ne sont pas importés et ne constituent pas des données réelles.

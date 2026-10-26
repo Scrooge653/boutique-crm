@@ -1,0 +1,3 @@
+import jwt from 'jsonwebtoken';import db from './db.js';
+export function auth(req,res,next){const token=req.cookies?.atelier_session;if(!token)return res.status(401).json({error:'Authentification requise'});try{const {sub}=jwt.verify(token,process.env.JWT_SECRET);const u=db.prepare('SELECT id,name,email,role FROM users WHERE id=?').get(sub);if(!u)return res.status(401).json({error:'Session invalide'});req.user=u;next()}catch{return res.status(401).json({error:'Session expirée ou invalide'})}}
+export function adminOnly(req,res,next){if(req.user?.role!=='admin')return res.status(403).json({error:'Accès réservé à l’administration'});next()}
